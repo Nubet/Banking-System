@@ -19,13 +19,13 @@ typedef struct {
 
 // FILE OPERATIONS
 int generate_account_number();
-void append_account_to_db(const Account_s *acc);
+void append_account_to_db(Account_s *acc);
 Account_s* load_accounts(int *count);
 void rewrite_accounts_in_db(Account_s *accounts, int count);
 
 // DISPLAYING AND ITERATION
-void for_each_account(void (*cb)(const Account_s*, void*), void *ctx);
-void for_each_account_noctx(void (*cb)(const Account_s*));
-void display_account_info(const Account_s *a);
+void for_each_account(void (*cb)(Account_s*, void*), void *ctx);
+void for_each_account_noctx(void (*cb)(Account_s*));
+void display_account_info(Account_s *a);
 
 #endif // ACCOUNT_H

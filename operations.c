@@ -45,7 +45,7 @@ void run_menu_loop() {
 // HANDLERS
 
 void create_new_account() {
-    Account_s a;
+    Account_s a = { 0 };
     a.account_number = generate_account_number();
     printf("\n-- Create an Account (#%d) --\n", a.account_number);
     printf("Name: ");
@@ -87,7 +87,7 @@ void search_account() {
     }
     getchar();
     
-    void (*cb)(const Account_s*, void*) = NULL;
+    void (*cb)(Account_s*, void*) = NULL;
     switch (choice) {
         case 1: cb = search_by_number_callback;   break;
         case 2: cb = search_by_name_callback;     break;
@@ -109,9 +109,11 @@ void search_account() {
     ctx.key[sizeof(ctx.key) - 1] = '\0';
 
     for_each_account(cb, &ctx);
-
+	
     if (!ctx.found)
         printf("No results found\n");
+    else 
+         display_account_info(&ctx.acc);
 }
 
 void deposit_money() {
@@ -162,7 +164,7 @@ void withdraw_money() {
     for (int i = 0; i < n; ++i) {
         if (arr[i].account_number == num) {
             if (arr[i].balance < total) {
-                printf("Lack of funds\n");
+                printf("You are trying to withdraw more money that you obatain! Lack of funds\n");
             } else {
                 arr[i].balance -= total;
                 printf("Updated balance: %.2f\n", arr[i].balance);

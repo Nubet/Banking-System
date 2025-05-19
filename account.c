@@ -1,13 +1,14 @@
 #include "account.h"
+#include "search.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int generate_account_number(void) {
+int generate_account_number() {
     int next = 1;
     FILE* file = fopen(DB_FILE_PATH, "rb");
     if (file) {
-        Account_s a;
+        Account_s a = { 0 };
         while (fread(&a, sizeof(a), 1, file) == 1) {
             if (a.account_number >= next)
                 next = a.account_number + 1;
@@ -17,7 +18,7 @@ int generate_account_number(void) {
     return next;	
 }
 
-void append_account_to_db(const Account_s *acc) {
+void append_account_to_db(Account_s *acc) {
     FILE* fp = fopen(DB_FILE_PATH, "ab");
     if (!fp) {
         fprintf(stderr,"error while appending new account to data base \n");
@@ -60,19 +61,24 @@ void rewrite_accounts_in_db(Account_s *accounts, int count) {
     fclose(fp);
 }
 
-void for_each_account(void (*cb)(const Account_s*, void*), void *ctx) {
+void for_each_account(void (*cb)(Account_s*, void*), void *ctx) {
     FILE* fp = fopen(DB_FILE_PATH, "rb");
     if (!fp) return;
     Account_s a;
     while (fread(&a, sizeof(a), 1, fp) == 1) {
         cb(&a, ctx);
+       
+       //exit after first matching acc have been found 
+       if (((Account_search_context_s*)ctx)->found)
+            break;
+
     }
     fclose(fp);
 }
-void for_each_account_noctx(void (*cb)(const Account_s *a)) {
+void for_each_account_noctx(void (*cb)(Account_s *a)) {
     FILE *fp = fopen(DB_FILE_PATH, "rb");
     if (!fp) return;
-    Account_s a;
+    Account_s a = { 0 };
     while (fread(&a, sizeof(a), 1, fp) == 1) {
         cb(&a);
     }
@@ -80,7 +86,7 @@ void for_each_account_noctx(void (*cb)(const Account_s *a)) {
 }
 
 
-void display_account_info(const Account_s *a) {
+void display_account_info(Account_s *a) {
     printf(
         "#ID:%d | %s %s | %s | PESEL:%s | Balance:%.2f | Loan to pay:%.2f\n",
         a->account_number, a->name, a->surname,
