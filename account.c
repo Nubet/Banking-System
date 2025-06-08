@@ -61,17 +61,23 @@ void rewrite_accounts_in_db(Account_s *accounts, int count) {
     fclose(fp);
 }
 
-void for_each_account(void (*cb)(Account_s*, void*), void *ctx) {
+void for_each_account(void (*cb)(Account_s *a, Account_search_context_s *ctx),
+                      Account_search_context_s *ctx){
     FILE* fp = fopen(DB_FILE_PATH, "rb");
     if (!fp) return;
     Account_s a;
+    bool found_any = false;
     while (fread(&a, sizeof(a), 1, fp) == 1) {
+        ctx->found = false;
         cb(&a, ctx);
-       
-       //exit after first matching acc have been found 
-       if (((Account_search_context_s*)ctx)->found)
-            break;
 
+        if (ctx->found) {
+            display_account_info(&a);
+            found_any = true;
+        }
+    }
+    if (!found_any) {
+        printf("No matching accounts found\n");
     }
     fclose(fp);
 }
