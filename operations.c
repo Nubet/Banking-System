@@ -87,7 +87,7 @@ void search_account() {
     }
     getchar();
     
-    void (*cb)(Account_s*, void*) = NULL;
+    void (*cb)(Account_s*, Account_search_context_s*) = NULL;
     switch (choice) {
         case 1: cb = search_by_number_callback;   break;
         case 2: cb = search_by_name_callback;     break;
@@ -109,11 +109,6 @@ void search_account() {
     ctx.key[sizeof(ctx.key) - 1] = '\0';
 
     for_each_account(cb, &ctx);
-	
-    if (!ctx.found)
-        printf("No results found\n");
-    else 
-         display_account_info(&ctx.acc);
 }
 
 void deposit_money() {
