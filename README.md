@@ -1,4 +1,4 @@
-# Banking System Simulator
+# Banking System - Console Application
 
 Portable C11 program for managing bank accounts via a file-based database, demonstrating modular design, safe I/O, and transaction consistency.
 
